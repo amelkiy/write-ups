@@ -80,7 +80,7 @@ A quick examination of the two shows that there are 2 rogue files in there:
 * /boot/grub/locale/en@straylian.mo  
 * /lib.tar.gz/libfancy.so
 
-Both are identical and are XZ-compressed files that contain the flag (one of the included [here](./libfancy.so.txt):  
+Both are identical and are XZ-compressed files that contain the flag (one of the included [here](./libfancy.so.txt)):  
 **CTF{how.did.you.find.this}**
 
 All in all - a good challenge, I overkilled it a little since one the XZs exists in the pcap file and can be extracted with **binwalk**, it's just that my VM was really low on memory and binwalk couldn't run :)
