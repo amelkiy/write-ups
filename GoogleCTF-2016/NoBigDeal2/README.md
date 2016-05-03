@@ -1,5 +1,5 @@
 ### No Big Deal 2
->Description: Now for the fun part of this level - can you find the flag in this [pcap](./no-big-deal.pcap.gz)  
+>Description: Now for the fun part of this level - can you find the flag in this [pcap](https://github.com/amelkiy/write-ups/releases/download/google_ctf_2016_nbd2/no-big-deal.pcap.gz)  
 >250 points  
 >I uploaded the gzip version...
 
@@ -86,10 +86,10 @@ Both are identical and are XZ-compressed files that contain the flag (one of the
 All in all - a good challenge, I overkilled it a little since one the XZs exists in the pcap file and can be extracted with **binwalk**, it's just that my VM was really low on memory and binwalk couldn't run :)
 
 In the directory:
-* [The pcap (gzipped)](./no-big-deal.pcap.gz)
-* [The requests from it](./nbd-requests.bin)
-* [The responses from it](./nbd-responses.bin)
+* [The pcap (gzipped)](https://github.com/amelkiy/write-ups/releases/download/google_ctf_2016_nbd2/no-big-deal.pcap.gz)
+* [The requests from it](https://github.com/amelkiy/write-ups/releases/download/google_ctf_2016_nbd2/nbd_requests.bin)
+* [The responses from it](https://github.com/amelkiy/write-ups/releases/download/google_ctf_2016_nbd2/nbd_responses.bin)
 * [The script that does all the work](./nbd.py)
-* [The snapshot of the memory with the files](./memory.bin.gz) - Careful, this expands to 4GB
+* [The snapshot of the memory with the files](https://github.com/amelkiy/write-ups/releases/download/google_ctf_2016_nbd2/memory.bin.gz) - Careful, this expands to 4GB
 * [The file with the flag](./libfancy.so.txt)
 
