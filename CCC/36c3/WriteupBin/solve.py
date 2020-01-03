@@ -6,16 +6,16 @@ import time
 
 HTML_TEMPALTE = '''
 <form data-parsley-validate>
-  <input type="text" 
-         data-parsley-trigger="focusout"
-         data-parsley-equalto='a[href^="/show.php?id={guess_so_far}{char}"]'
-         
-         data-parsley-errors-container="form[action='/like.php']"
-         data-parsley-error-message='<input type="input" name="id" value="0000000000000000">'
-         
-         value='a[href^="/show.php?id={guess_so_far}{char}"]'
-         autofocus>
-  <input type="submit">
+    <input type="text" 
+        data-parsley-trigger="focusout"
+        data-parsley-equalto='a[href^="/show.php?id={guess_so_far}{char}"]'
+
+        data-parsley-errors-container="form[action='/like.php']"
+        data-parsley-error-message='<input type="input" name="id" value="0000000000000000">'
+
+        value='a[href^="/show.php?id={guess_so_far}{char}"]'
+        autofocus>
+    <input type="submit">
 </form>
 '''
 
