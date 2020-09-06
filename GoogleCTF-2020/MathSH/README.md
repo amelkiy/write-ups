@@ -273,9 +273,9 @@ The shell itself is running fully inside the AppDomain, but the exception handli
 internal void WriteException(Exception ex)
 {
   if (ex is TargetInvocationException)
-	ex = ex.InnerException;
+    ex = ex.InnerException;
   if (this._fatal_exception)
-	throw ex;
+    throw ex;
   this.Shell.WriteLine(ex.Message);
 }
 ```
@@ -285,11 +285,11 @@ private static void RunShell(IShell shell)
 {
   try
   {
-	Program.GetInstance().Run(Program._flag_path, shell);
+    Program.GetInstance().Run(Program._flag_path, shell);
   }
   catch (Exception ex)
   {
-	shell.WriteLine((object) ex);
+    shell.WriteLine((object) ex);
   }
 }
 ```
@@ -305,7 +305,7 @@ The `JScriptRunner.EntryPoint` class provides a function that asserts full permi
 private static void SetLeaseTime()
 {
   if (EntryPoint._set_lease)
-	return;
+    return;
   EntryPoint._set_lease = true;
   new PermissionSet(PermissionState.Unrestricted).Assert();
   LifetimeServices.LeaseTime = TimeSpan.FromDays(365.0);
@@ -374,17 +374,17 @@ using System;
 
 namespace FileLoadException
 {
-	public class MyTest : MarshalByRefObject{
-		~MyTest(){
-			throw new Exception();
-		}
-	}
-	public class FileLoadException
+    public class MyTest : MarshalByRefObject{
+        ~MyTest(){
+            throw new Exception();
+        }
+    }
+    public class FileLoadException
     {
         public MyTest GetSpecialClass(){
             return new MyTest();
         }
-	}
+    }
 }
 ```
 The python code:
