@@ -1,4 +1,4 @@
-# Google CTF Quals 2020 - MathSH
+# Google CTF 2020 - MathSH
 ## Disclaimers
 1. **We did _NOT_ solve this challenge.**  
 Unfortunately, we didn't find a way to read the flag, but we managed to do some pretty cool stuff that we wanted to share.  
