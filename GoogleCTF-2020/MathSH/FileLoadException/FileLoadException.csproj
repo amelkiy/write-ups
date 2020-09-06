@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net4.7.2</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Runtime" Version="4.0.0.0"/>
+    <Reference Include="JSriptRunner">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\challenge\JScriptRunner.dll</HintPath>
+    </Reference>
+    <Reference Include="SlimlineJScript">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\challenge\SlimlineJScript.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
