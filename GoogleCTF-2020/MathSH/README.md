@@ -1,7 +1,7 @@
 # Google CTF Quals 2020 - MathSH
-## Dislaimers
+## Disclaimers
 1. **We did _NOT_ solve this challenge.**  
-Unfortunately, we didn't find a way to read the flag, but we managed to do some pretty cool stuff that we wnated to share.  
+Unfortunately, we didn't find a way to read the flag, but we managed to do some pretty cool stuff that we wanted to share.  
 2. We started with 0 knowledge in C# so I assume some stuff I'll write here will be pretty obvious to the regular C# developer.  
 3. Since this challenge requires a **LOT** of exploring, it's gonna be... Long... Very long... Sorry in advance ':D
 ## Overview
@@ -88,7 +88,7 @@ SlimlineJScript.EvaluationException: Can't open flag file.
 Additional Arguments:
 0 = c:\ctf\flag.txt
 ```
-Nice! So now we know the path of the flag, the names of namespaces and objects involved and how to show exceptions. The exception that was thrown is an internal exeption, so what if we tried to use the built-in objects and functions to read the flag directly? Remember that we didn't get an error for accessing `__global__.System.String`? Let's try to call `__global__.System.IO.File.ReadAllText()`:
+Nice! So now we know the path of the flag, the names of namespaces and objects involved and how to show exceptions. The exception that was thrown is an internal exception, so what if we tried to use the built-in objects and functions to read the flag directly? Remember that we didn't get an error for accessing `__global__.System.String`? Let's try to call `__global__.System.IO.File.ReadAllText()`:
 ```
 MathSH> __global__.System.IO.File.ReadAllText("c:\\ctf\\flag.txt")
 System.Security.SecurityException: Request for the permission of type 'System.Security.Permissions.FileIOPermission, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089' failed.
@@ -131,7 +131,7 @@ Internet
 The Url of the assembly that failed was:
 file:///C:/ctf/challenge/SlimlineJScript.DLL
 ```
-Very interesing! We can learn from here that:
+Very interesting! We can learn from here that:
 * This is C# code.
 * We are running in an [AppDomain](https://docs.microsoft.com/en-us/dotnet/api/system.appdomain?view=netcore-3.1), which is a way to sandbox code in C#.NET.
 * There are specific permissions to the AppDomain, restricting us to the `C:\ctf\challenge` directory.
@@ -187,7 +187,7 @@ public static MethodInfo GetMethod(Type type, string name, bool static_type, boo
 // Calls a public method "name" of a given object "targetObject" with "args".
 public static object CallMethod(object targetObject, string name, bool case_sensitive, object[] args);
 ```
-Normally, when we use the shell, the ExpressionResolver calls the last "CallMethod" function to invoke a requested method, which in turn finds a `public static` function of a `Type` or a `public` function of an instance, and calls it. If we want to call methods that are non-static or private, we're gonna have to get creative. We can call `GetMethod` ourselves, provide the flags that we want and use the returnd method as a parameter to the fist "CallMethod" function. Let's try that:
+Normally, when we use the shell, the ExpressionResolver calls the last "CallMethod" function to invoke a requested method, which in turn finds a `public static` function of a `Type` or a `public` function of an instance, and calls it. If we want to call methods that are non-static or private, we're gonna have to get creative. We can call `GetMethod` ourselves, provide the flags that we want and use the returned method as a parameter to the fist "CallMethod" function. Let's try that:
 ```
 MathSH> __global__.System.AppDomain.CurrentDomain.GetAssemblies()
 Cannot find function System.AppDomain.CurrentDomain.GetAssemblies
@@ -268,7 +268,7 @@ So we can do some pretty sophisticated stuff, now let's see how can we attack th
 ## Attack Vectors
 Now this is the part that we failed to overcome :D but these were some of our attack vectors:
 ### Attack Vector #1 - Exception.ToString
-The shell itself is running fully inside the AppDomain, but the excpetion handling mechanism can throw an exception all the way to the caller of the AppDomain. This is the function that handles the exceptions inside (`JScriptRunner.JScriptGlobal`):
+The shell itself is running fully inside the AppDomain, but the exception handling mechanism can throw an exception all the way to the caller of the AppDomain. This is the function that handles the exceptions inside (`JScriptRunner.JScriptGlobal`):
 ```
 internal void WriteException(Exception ex)
 {
@@ -296,7 +296,7 @@ private static void RunShell(IShell shell)
 The idea here is:
 * Create an Exception.
 * Make the ToString of the exception read the flag file and write it to the shell.
-* Throw the execption after doing `__init__(true)`.
+* Throw the exception after doing `__init__(true)`.
 Unfortunately, we couldn't make it work, since all the custom execptions we created were defined in assemblies that were loaded into the AppDomain (see Loading a Custom Assembly) and the code shared the restricted permissions.
 ### Attack Vector #2 - Leverage SetLeaseTime
 The `JScriptRunner.EntryPoint` class provides a function that asserts full permissions to set the `LeaseTime` for remoting objects;
@@ -311,7 +311,7 @@ private static void SetLeaseTime()
   LifetimeServices.LeaseTime = TimeSpan.FromDays(365.0);
 }
 ```
-If we can modify some existing code and get this line: `LifetimeServices.LeaseTime = TimeSpan.FromDays(365.0);` to execute our code instead, we can run with unrestricted permissions. Unfortunately, all our effots to do so failed and we couldn't get it to work.
+If we can modify some existing code and get this line: `LifetimeServices.LeaseTime = TimeSpan.FromDays(365.0);` to execute our code instead, we can run with unrestricted permissions. Unfortunately, all our efforts to do so failed and we couldn't get it to work.
 ## Using the Shel Obejct to Communicate Stuff Back
 At this level of infra, we no longer want to use `memset() / metmlist()` to show strings, so we can just retrieve the Shell object from `JScriptRunner.JScriptGlobal` and use it to communicate. This involves getting the "Shell" Property and accessing its value:
 ```
