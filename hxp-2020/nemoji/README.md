@@ -64,4 +64,4 @@ Our prediction script predicted that we would get `0x90904` if we connect to the
 ## Flag
 With all that said, @nivye was a little more adventerous than me and just ran the script with multiple instances. He got the flag in a couple of minutes 😁  
 ![Flag!](https://github.com/amelkiy/write-ups/blob/master/hxp-2020/nemoji/flag.png?raw=true)  
-To this day I don't know why the random prediction was wrong, but fraknly, it saved us from staying up until 6:42 am (Israel time) so.. Thanks @nivye! 😜  
+To this day I don't know why the random prediction was wrong, but fraknly, it saved us from staying up until 6:42 am (Israel time) so.. Thanks @nivye! 😜

