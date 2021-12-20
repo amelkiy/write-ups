@@ -332,5 +332,5 @@ I created a text file containing all the moves and a script that generated the n
 
 The moves can be optimized by a LOT but, unfortunately, I didn't have time for it at all. But ALLES! did it in 396 moves!!! 😳 so try to beat that!
 
-Hope you enjoyed my ~~novel~~ write up!
+Hope you enjoyed my ~~novel~~ write up!  
 Pasten
