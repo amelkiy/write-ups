@@ -240,7 +240,8 @@ There is actually a hint in a tutorial level about this:
 
 ![close is stop!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/close_is_stop.png?raw=true)
 
-I actually looked at this code and completely missed it... Thank god @gil was there to save the day. Let's look at how `close` and `stop` are evaluated here:  
+I actually looked at this code and completely missed it... Thankfully, @gil was there to save the day and found the solution.  
+Let's look at how `close` and `stop` are evaluated here:  
 
 ![close is stop code!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/close_and_stop_code.png?raw=true)
 
