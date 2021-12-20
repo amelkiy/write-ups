@@ -27,7 +27,7 @@ Each `Object` tile represents a `Character`. So, for example, the object tile wi
 An attribute is a certain funtion that can be given to a character. For example - the attribute `Win` is a tile marked with `W` and when given to a character it makes it the winning tile of the level.  
 The attributes can be given to characters by putting the tiles `Object`, `is` , `Attribute` in order horizontally or vertically right next to each other:
 
-![Flag is Win!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/fisw.png?raw=true)  
+![Flag is Win!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/fisw.png?raw=true)  
 
 The 3 tiles in a row create a rule that says that the Flag Character on the bottom right is a tile that if you touch it - you win the level.  
 It's very hard to explain all the beauty and complexity in this game since almost EVERYTHING is customizable by creating these rules and there is a LOT I didn't cover, like `Object is Object` also works and replaces the second object with the first. I really suggest playing the game from the beginning and working through the levels to understand the whole concept as it is really hard to put in words and will take most of this write-up 😅  
@@ -42,7 +42,7 @@ Thankfully, hxp provided all of the tools needed to do all that - just run `./ta
 
 The first 6 levels are just a tutorial - I won't cover them. The next 4 levels are easy-ish. The first level that challenged me was `mi5sing` - although it doesn't require anything other than just thinking a little extra and took me WAAAAY to much time to solve, it's a good prequel for the first "actual" level. The setup:
 
-![mi5sing!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/mi5sing.png?raw=true)
+![mi5sing!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/mi5sing.png?raw=true)
 
 Let's go over all existing rules in the map (left to write, top to bottom)
 * `baba is you` - the weird elephant thingy is the character controlled by the player
@@ -56,17 +56,17 @@ That's it.
 It's easy to see that we can't to anything with the key, skull or flag, since we can't get to them. We can't change the rules of the door or the wall, so that only leaves one interesting tile - the `baba` object.  
 I didn't get into it too much in the background, but there is one more option for a valid rule in the game - `Object is Object`. If we put `skull is key` then the skull will turn into a key:
 
-![mi5sing: skull is key!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/mi5sing_skull_key.png?raw=true)
+![mi5sing: skull is key!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/mi5sing_skull_key.png?raw=true)
 
 That doesn't help us at all of course... But we can turn the key into `baba`:
 
-![mi5sing: key is baba!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/mi5sing_key_is_baba.png?raw=true)
+![mi5sing: key is baba!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/mi5sing_key_is_baba.png?raw=true)
 
 What does this weird `key is baba is you` rule do and what does it give us?  
 The way that the game interprets the rule is just by evaluating both: `key is baba` and `baba is you` separately. We turned the key into `baba`. If you didn't play the game then I should explain what `baba is you` means - the `you` attribute gives you control over the character, so when you use the arrows keys, the game actually moves the entities that are assigned the attribute `you`.  
 So now we have 2 characters of the type `baba` and both of them follow the rule `baba is you` so when we use the arrow keys - we control both of them. Move twice to the right:
 
-![mi5sing: solved!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/mi5sing_baba_near_flag.png?raw=true)
+![mi5sing: solved!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/mi5sing_baba_near_flag.png?raw=true)
 
 and up.
 
@@ -74,7 +74,7 @@ and up.
 
 Up until now we didn't require any extra knowledge other than just mastering the game. This new level, however, is unsolvable (afaik) using "traditional" knowledge of the game:
 
-![messin6!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/messin6.png?raw=true)
+![messin6!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/messin6.png?raw=true)
 
 Looks almost similar to the previous level, but not quite. We can no longer prepend anyting to the `baba is you` rule, so we can't use the trick we used in the prevous level. I think it's time to go deeper into the rabbit hole.  
 
@@ -124,7 +124,7 @@ The first thing I did was to just look at the binary and try to identify interes
 
 Nice, this looks like the map of the level. From a simple count, the map is 0x12*0x0f = 0x10e. Let's look at our level:
 
-![messin6: map!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/messin6_map.png?raw=true)
+![messin6: map!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/messin6_map.png?raw=true)
 
 Looks pretty straighforward - `0xFF` is an empty tile, `0x00` is the `is` tile, `0x22` is a wall, etc. There are no hidden features.  
 
@@ -135,7 +135,7 @@ The first thing I did is open it with IDA. From some version it natively support
 However the assembly code looks horrible (for me anyway) and it's very hard to make sense of it... So I tried to open it in Ghidra. You will need [this Gameboy plugin](https://github.com/Gekkio/GhidraBoy).  
 Ghidra seems to do a much better job than IDA in terms of parsing the file, memory segments and the generic decompiler makes it so much easier to look at. Before you notice stuff like this of course:
 
-![ghidra fail!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/ghidra_fail_1.png?raw=true)
+![ghidra fail!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/ghidra_fail_1.png?raw=true)
 
 which basically means
 ```
@@ -149,7 +149,7 @@ After a while, though, you get used to this and rely on your intuition: if there
 
 After considerable reversing and understanding the internal workings, I noticed this (address `0x243a`, i called the function `apply_rules`):  
 
-!["is" rules!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/is_rules.png?raw=true)
+!["is" rules!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/is_rules.png?raw=true)
 
 The code here is in charge of parsing the rules. It searches for `is` tiles and evaluates the rules. The first block evaluates horizontal rules and the second block evaluates vertical rules. The conditions before it **try to** make sure there are no overflows in the evaluation. For example, the horizontal check (marked with an orange rectangle) makes sure the `is` tile is not on the leftmost column, and the vertical rule (marked with a purple rectangle) makes sure the `is` tile is not on the first or last row.  
 But, if you look closely, you can see that they are both just a little off and they give way to a little bit of a wiggle room:  
@@ -158,7 +158,7 @@ But, if you look closely, you can see that they are both just a little off and t
 
 I always use the `tutori3l` level because it allows the most wiggle room:
 
-!["is" failes!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/is_fails.png?raw=true)
+!["is" failes!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/is_fails.png?raw=true)
 
 Now, the first out of bounds is easy to understand - the map is stored in a continuous memory array, so it makes sense that the next tile after the rightmost column is at the leftmost column one row below. But in order to understand the 2 other ones, we need to dig a little deeper.  
 
@@ -167,7 +167,7 @@ My first instinct was that the access to map is made with modulus to the size of
 In general, I don't like parsing assembly and badly-decompiled code - I always prefer cheats and helper tools. Analysing memory is one of those things I just really prefer doing. So without thinking too much I attached GDB to the `tas-emulator` process and dumped the heap. I figured since the memory of the Gameboy should be 8k, it makes sense that the emulator just malloc's it in the beginning and it should be continuous somewhere inside the heap, probably somewhere at the beginning.  
 The simplest way I thought of to find where the map was, was taking one heap snapshot, moving `baba`, taking another snapshot and comparing the 2. I quickly found the map but it was a little different from what I expected to see:
 
-![maps dump!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/maps.png?raw=true)
+![maps dump!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/maps.png?raw=true)
 
 I highlighted the different sections in the memory view:
 1. Green section - "first map" - what I found to be the map at address `0xc0b9` - what the function `get_tile_value` uses to get the tile value by index
@@ -195,7 +195,7 @@ The index map is going to be relevant for a different level so keep that in mind
 The next area we looked at was the actual evaluation of the rules (the function I called `evaluate_is_block` at address `0x22dd`).  
 It consists of 2 main areas:
 
-!["is" evaluation!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/is_evaluation.png?raw=true)
+!["is" evaluation!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/is_evaluation.png?raw=true)
 
 The object assigment area is not very interesting, it's very straightforward. The attribute assignment, however, is very interesting - there is a LOT happening there. Let's digest!  
 first of all, let's understand this:
@@ -237,15 +237,15 @@ There is something a little weird - the counters (`g_num_rval_win` etc.) are not
 Or is it?  😏
 There is actually a hint in a tutorial level about this:  
 
-![close is stop!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/close_is_stop.png?raw=true)
+![close is stop!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/close_is_stop.png?raw=true)
 
 I actually looked at this code and completely missed it... Thank god @gil was there to save the day. Let's look at how `close` and `stop` are evaluated here:  
 
-![close is stop code!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/close_and_stop_code.png?raw=true)
+![close is stop code!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/close_and_stop_code.png?raw=true)
 
 **Close literally means stop!** So if we manage to assign 2 close and 2 stop attributes - the last close will overflow into the `win` array! That character will be considered the winning tile of the level! Is it possible in this level? Damn right it is!!  
 
-![messin6 win!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/messin6_win.png?raw=true)
+![messin6 win!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/messin6_win.png?raw=true)
 
 Let's read the relevant rules in the order of evaluation (looking for `is` blocks right to left, top to bottom):
 1. Skull is stop
@@ -259,34 +259,34 @@ The door is now the win tile. Touch it and win :)
 
 I gotta say, that `missin6` level was the hardest one for me, I actually patched the game to skip it so we could figure out the solution for the next levels... And we arrived into `mov7ng`:  
 
-![mov7ng!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/mov7ng.png?raw=true)
+![mov7ng!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/mov7ng.png?raw=true)
 
 Note that `baba is move` and `hxp is you` - we control the `hxp` tile and the `baba` tile is moving sideways. Moreover - it's moving to the left, pushing the only relevant tiles to the wall, leaving us with nothing to work with... But it was sufficient to play the level for 10 seconds to figure out what's happening - once the `baba` tile cannot move to the left anymore, it changes direction to the right. If at this point we die / restart the level - it will **start by moving to the right**. Easy.  
 
-![mov7ng change direction!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/mov7ng_change_dir.png?raw=true)
+![mov7ng change direction!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/mov7ng_change_dir.png?raw=true)
 
 NEXT! We arrive to the next level (`c8llision`):
 
-![c8llision!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/c8llision.png?raw=true)
+![c8llision!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/c8llision.png?raw=true)
 
 The flag is moving to the left, we don't have any way to catch it and it dies when it hits the skull... Contrary to `mov7ng`, we can't make it change directions since it always dies and never reaches the end. We need to figure out how it determines where to move the first time the level starts.  
 The relevant code was found in a function I called `process_user_input` at address `0x2bdb`. It moves all tiles that are assigned the `move` attribute and then the ones with the `you` attribute assigned. The function `move_tile_recursive` (address `0x26d5`) returns 0 if the tile failed to move (for example, was blocked, or movement direction was invalid)
 
-![move code!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/move_code.png?raw=true)
+![move code!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/move_code.png?raw=true)
 
 I didn't even bother to check where that horrible address calculation takes us to, but my intuition said that it would be an array that corresponds to the index map and holds the last direction each index moved to. I checked it by taking a heap dump for the `mov7ng` level once when `baba` was moving right and once when it was moving left. `baba` is at index 6 for this level. The movement directions array is highlighted in red, the movement direction of `baba` is underlined in orange.  
 
-![move dumps!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/move_dumps.png?raw=true)
+![move dumps!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/move_dumps.png?raw=true)
 
 The "bug" here is that the movement directions are not cleared on every lever start, so if at any point in the game there was an entity with our index that moved - the direction will be saved until the next moving element will get that index, and it will start moving in the direction that is written in that cell in the array.  
 Ok, so we understand how the movement is calculated, but the flag in the `c8llision` level is at index 7, and throughout the game no tile at index 7 ever moved... This only works for tiles that were assigned the `move` ot `you` attributes... We can see that by looking at index 7 in the array, which holds 0. 0 is an illegal move, so when the game will try to move this tile - the `move_tile_recursive` function will return 0 and the default movement direction (left) will be assigned, and we lose.  
 I searched for levels that could let me assign the `move` or `you` attribute to any tile at index 7 but failed... Until I got to the previous level (mov7ng) and then it hit me... The move tile is free, index 7 is a skull character and the skull object tile is free on the bottom! We can assign move to the skulls and force our skull to move right!  
 
-![mov7ng index 7!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/mov7ng_index_7.png?raw=true)
+![mov7ng index 7!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/mov7ng_index_7.png?raw=true)
 
 Now, it's important to say that the first movement of the skulls depends on everything you did in the previous levels. If you look at the movement direction array, you will notice that it's pretty random in terms of moves (1, 2, 4, 8 all over), so this state will be the first state that is evaluated when you click the next arrow button. For me it did something like that:  
 
-![mov7ng index 7 first move!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/mov7ng_index_7_first_move.png?raw=true)
+![mov7ng index 7 first move!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/mov7ng_index_7_first_move.png?raw=true)
 
 Which is chaotic but fine. Some skulls destroyed each other, but the most important one remained intact and was moving at full speed to the left. Now the only thing left to do is wait for it to reach the leftmost column, turn right and finish the level. If the flag gets destroyed in the middle by one of the skulls, that doesn't really matter since the direction has already beed saved in the array - you can restart the level and win normally. The flag will start moving to the right and you can catch it easily.  
 
@@ -294,20 +294,20 @@ Which is chaotic but fine. Some skulls destroyed each other, but the most import
 
 We have reached the last level!!!
 
-![ran9om!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/ran9om.png?raw=true)
+![ran9om!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/ran9om.png?raw=true)
 
 There is a random tile (hxp) - it takes random form (random attributes) and moves to a random direction so if we touch it when it randomly behaves like the win tile - we win.  
 This is the level I spent the least time on as I just tried random stuff and figured out that every time i perform a certain move I win... The secret move is basically standing on the right of the hxp tile and quickly doing `up left down`:
 
-![ran9om secret move!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/ran9om_secret_move.png?raw=true)
+![ran9om secret move!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/ran9om_secret_move.png?raw=true)
 
 But I'll try to show why that works. When the `is` tile is being evaluated it's taking the right (or bottom) tile to understand what is the attribute/object it needs to assign to the left (or top) object tile. If the left tile is of the `random` type - it receives a random type using what i call the `fix_random_tile_value` function (address `0x23ef`):  
 
-![random tile calculation!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/random_tile_calc.png?raw=true)
+![random tile calculation!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/random_tile_calc.png?raw=true)
 
 The values in these globals are set by the main loop (address `0x3158`):
 
-![random values calculation!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/random_values_calc.png?raw=true)
+![random values calculation!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/random_values_calc.png?raw=true)
 
 The gist is that the byte at `0xc3a6` gets the user input (1=right, 2=left, 4=up, 8=down) and all the bytes get shifted one "right" (`0xc3a7` gets the value from `0xc3a6` etc.) the value from `0xc3ad` is discarded.
 
@@ -321,7 +321,7 @@ So in order to make the random tile return `win` we must have the values `2` and
 But that's not enough - the moves are calculated **before** the rules - the `apply_rules` function is called from the `process_user_input` function at `0x2e0c`, and it's the very last thing that function does. So if our `left` move is the one touching the tile, we won't win. We need a "clean" left so the rules get calculated, the tile receives the `win` attriute, then we need to touch the tile and it doesn't really matter how.  
 So we arrive close to the `hxp` tile, wait a little for the random array to clear, then quickly perform `up, left, down` and the `down` move touches the tile while it has the `win` attribute assigned.  
 
-![flag!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/flag.png?raw=true)
+![flag!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/flag.png?raw=true)
 
 ## End
 
