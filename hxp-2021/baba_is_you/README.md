@@ -246,7 +246,7 @@ Let's look at how `close` and `stop` are evaluated here:
 ![close is stop code!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/close_and_stop_code.png?raw=true)
 
 If a close attribute is assigned to an object, that object will automatically get the stop attribute assigned to it as well. **Close literally means stop!**  
-So if we manage to assign 2 close and 2 stop attributes - the last close will overflow into the `win` array! That character will be considered the winning tile of the level! Is it possible in this level? Damn right it is!!  
+So if we manage to assign 2 close and 2 stop attributes - the last close will trigger a stop assignment and it will overflow into the `win` array! That character will be considered the winning tile of the level! Is it possible in this level? Damn right it is!!  
 
 ![messin6 win!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/messin6_win.png?raw=true)
 
