@@ -30,6 +30,7 @@ The attributes can be given to characters by putting the tiles `Object`, `is` , 
 ![Flag is Win!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/fisw.png?raw=true)  
 
 The 3 tiles in a row create a rule that says that the Flag Character on the bottom right is a tile that if you touch it - you win the level.  
+The way to play the game is that you always have one character you control with the arrow keys and you can move around and push tiles to form rules.  
 It's very hard to explain all the beauty and complexity in this game since almost EVERYTHING is customizable by creating these rules and there is a LOT I didn't cover, like `Object is Object` also works and replaces the second object with the first. I really suggest playing the game from the beginning and working through the levels to understand the whole concept as it is really hard to put in words and will take most of this write-up 😅  
 
 ## The Challange
@@ -40,7 +41,7 @@ Thankfully, hxp provided all of the tools needed to do all that - just run `./ta
 
 ## Play-only levels
 
-The first 6 levels are just a tutorial - I won't cover them. The next 4 levels are easy-ish. The first level that challenged me was `mi5sing` - although it doesn't require anything other than just thinking a little extra and took me WAAAAY to much time to solve, it's a good prequel for the first "actual" level. The setup:
+The first 6 levels are just a tutorial - I won't cover them. The next 4 levels are easy-ish. The first level that challenged me was `mi5sing` - although it doesn't require anything other than just thinking a little extra and took me WAAAAY too much time to solve, it's a good prequel for the first "actual" level. The setup:
 
 ![mi5sing!](https://github.com/amelkiy/write-ups/blob/master/hxp-2021/baba_is_you/pics/mi5sing.png?raw=true)
 
