@@ -8,19 +8,19 @@ Nevertheless, as we were only about an hour and a half drive away, we made a qui
 ## Description
 
 Unfortunately, I didn't save the original description before the website went down, but the gist is this:  
-The challenge revolves around **DNS over HTTP(S) - DoH**. We get a website where we can
+The challenge revolves around **DNS over HTTPS - DoH**. We get a website where we can
 * Query any DNS name
-* Send a flag to a host assigned to us when we first visit the site (e.g. `ebd771980a2f12d1.insomnihack.flag`)
+* Send a flag to a domain assigned to us when we first visit the site (e.g. `ebd771980a2f12d1.insomnihack.flag`) - we call it the flag domain
 
-The backend implements DoH so the DNS queries we send go through the DoH mechanism, as well as the query for the flag domain when we ask to send it.  
+The backend implements DoH so the DNS queries we send go through the DoH mechanism, as well as the query for the flag domain when we ask to send the flag.  
 The backend uses `https://dns.google/dns-query` for the actual resolving and implements a cache (important!) for storing the responses.  
 
 We get the python code of the backend running in the challenge - [challenge.py](https://github.com/amelkiy/write-ups/blob/master/Insomnihack-2023/SleepSafeDoH/challenge.py)
 
-## DNS over HTTP(S)
+## DNS over HTTPS
 
 First, let's go over the basics of DoH.  
-The actual protocol is fairly simple - it works the same as the "normal" DNS protocol but uses an HTTP(S) connection as the medium.  
+The actual protocol is fairly simple - it works the same as the "normal" DNS protocol but uses an HTTPS connection as the medium.  
 The queries and the responses inside the HTTP request are of the same binary format as a normal DNS query (binary data hexdump-ed):
 
 ```
@@ -133,10 +133,12 @@ A couple of things come to mind:
   * Meaning that if we could make Google respond with an answer to some other domain, the server would consider it to be a valid answer
 * There is a third hint - `s = requests.Session()`
   * The server uses the same HTTPS session to communicate with Google when forwarding the requests 
-  * **If we could somehow make Google send back 2 responses one after the other we could poison the cache**
+  * **If we could somehow make Google send back 2 responses, one after the other, we could poison the cache**
 
 ### How would that work?  
-The first query contains a "question" for any domain but makes Google respond with 2 responses, the first one is fed to `requests` when reading the `content` after `s.send()`, and the 2nd contains an answer to a domain that we control. This answer is pending on the socket.  
+The first query contains a "question" for any domain but makes Google respond with 2 responses.  
+The first response is fed to `requests` when it reads the `content` after `s.send()`.  
+The 2nd response contains an answer to a domain that we control. This answer is pending on the socket.  
 The 2nd question contains our flag domain as the query (`ebd771980a2f12d1.insomnihack.flag`) and the server forwards it to Google with `s.send()`, but there is an answer already waiting to be read on the socket - the 2nd answer we made Google send using the first, bogus query.  
 Then, when invoking `.content`, the `requests` library will read this pending answer containing the A record for our domain and the server will regard it as the answer to the flag domain query.  
 Then this answer will be stored in the cache and when we ask to send the flag, the server will read our IP from the cache and send the flag to us.  
@@ -161,7 +163,7 @@ req.headers["Content-Length"] = str(len(query))
 ```
 
 There is something weird... The `question.qname.label` contains a list of the domain "elements" -  
-The domain in the DNS protocol is stored as Length-Value pairs instead of the dots in the name. For example:
+The domain in the DNS protocol is stored as length-value pairs instead of the dots in the name. For example:
 ```
 www.google.com
 
@@ -228,19 +230,20 @@ Content-Length: 31
 
 That will be our payload. Now we need to fit it into a DNS query inside one of the labels.  
 The payload is 169 bytes long, so we need to have 169 bytes of `\x80` prior to it. 
-Actually, the DNS label is going to be `decode()`-d prior to building a new request, and we need the `\x80` in the `decode()`-d version, so that when it will be `encode()`-d again, they will expand to `b'\xc2\x80'`.  
-So we actually need to put 169 pairs of `b'\xc2\x80'` into the request. They will be decoded to 169 `\x80` bytes, used to build a new query and `encode()`-d again.  
-The length of a single element in the DNS query has to be under 192 bytes (technically under 64, but it's usually not enforced), so we need to split these bytes into a number of ~90 bytes chunks.  
-One last thing, the DNS parser parses the packet in the `encode()`-d form, as bytes, so it will see a bunch of `b'\xc2\x80'` bytes.  
+Actually, the DNS label is going to be `decode()`-d prior to building a new request, and we need the `\x80` in the decoded version, so that when it will be encoded again, they will expand to `b'\xc2\x80'`.  
+So we actually need to put 169 pairs of `b'\xc2\x80'` into the request. They will be decoded to 169 `\x80` bytes, used to build a new query and encoded again.  
+The length of a single element in the DNS query has to be under 192 bytes (technically under 64, but it's usually not enforced), so we decided to split these bytes into a number of ~90 bytes chunks.  
+One last thing, the DNS parser parses the packet in the encoded form, as bytes, so it will see a bunch of `b'\xc2\x80'` bytes.  
 For an extra of 169 bytes we need 169 pairs of `b'\xc2\x80'`, so that's 338 bytes - 2 chunks of 180+158 bytes.  
+The full request will look something like this:
 ```
 [header - \x00\x00\x01...] [180] [b'\xc2\x80' * 90] [158] [b'\xc2\x80' * 79] [169] [payload - 169 bytes] [footer - \x00\x00...]
 ```
 Now the server will parse this request and get a DNS label of
 ```
-[b'\xc2\x80' * 90, [b'\xc2\x80' * 79], payload]
+[b'\xc2\x80' * 90, b'\xc2\x80' * 79, payload]
 ```
-The elements in the label are `decode()`-d to become `['\x80' * 90, '\x80' * 79, payload]`  
+The elements in the label are decoded to become `['\x80' * 90, '\x80' * 79, payload]`  
 and the new query is prepared:
 ```
 [header] [90] ['\x80' * 90] [79] ['\x80' * 79] [169] [payload] [footer]
@@ -248,16 +251,16 @@ and the new query is prepared:
 ```
 
 The length of this whole thing is 12+1+90+1+79+1+169+5 = 358 characters.  
-When `encode()`-d the `\x80`s are expanded, so we get an extra of 90+79=169 bytes.  
+When encoded, the `\x80`s are expanded, so we get an extra of 90+79=169 bytes.  
 That means that the last 169 bytes are being sent as an extra query to the server.  
 Ah, but we have a problem... We actually haven't encountered for 2 things:  
 1. The footer. Since the server code is adding a footer of 5 bytes we need to include it in our calculation
    * Well, we can actually make a small trick - remove the footer from our payload and use the one provided by the code
-2. The length of the payload is 169 and the character chr(169) exists in the data, so when `encode()`-d it will be expanded to `\xc2\xa9`
+2. The length of the payload is 169 and the character chr(169) exists in the data, so, when encoded, it will be expanded to `\xc2\xa9`
    * Not a problem, we just need to have one byte less of "padding"
 
 Let's review - first we removed 5 bytes from the payload, so the payload is now 164 bytes. We need to remove 5 padding bytes.  
-But we also need to add 5 padding bytes to include the footer as the end of our own request. These 2 cancel each other.    
+But, we also need to add 5 padding bytes to include the footer as the end of our own request. These 2 cancel each other.    
 Finally, we need to remove one byte to encounter for the expansion of the payload length byte.  
 That means we just remove one pair of `b'\xc2\x80'` bytes from the padding. That makes the 2nd chunk 158-2 = 156 bytes.    
 The new payload (with the footer removed will be):
@@ -283,7 +286,9 @@ The prepared query after decoding:
 We get an extra of 90+78+1 = 169 bytes, so the last 169 bytes are being sent as an extra query - that's perfect for our 164+5=169 byte payload and footer.  
 
 The only thing that we're missing is the query to the flag domain, so the cache is properly poisoned.  
-Bytes 4+5 in the header are the number of queries in the request, so all we need to do is to change them to `00 02` and append the query for the flag domain - it can be built with `build_dns_query(['ebd771980a2f12d1', 'insomnihack', 'flag'])`.    
+We need to invoke it right after we send the first query to Google, so the answer to the injected HTTP request will be read as an answer to the flag domain query.  
+We only need to make our request specify that we have 2 questions and append the flag domain query to the end.  
+Bytes 4+5 in the header are the number of questions in the query, so all we need to do is to change them to `00 02` and append the question for the flag domain - it can be built with `build_dns_query(['ebd771980a2f12d1', 'insomnihack', 'flag'])`.  
 
 The full payload:  
 ```
@@ -326,7 +331,7 @@ The full payload:
 
 ## Conclusion
 
-For an unknown reason, it doesn't always work... We experimented with raw SSL sockets and made sure everything works, but, sometimes, the server just won't receive the 2nd answer from Google. We think it's something to do with the way requests handles sessions, we didn't get much into it because we ran it a few times and it worked.  
+For an unknown reason, it doesn't always work... We experimented with raw SSL sockets and made sure everything works with Google, but, sometimes, the server just won't receive the 2nd answer. We think it has something to do with the way requests handles sessions, we didn't get much into it because we ran it a few times and it worked.  
 All in all, this challenge was super fun and really highlights the importance of working correctly with binary buffers and data validation.  
 So, remember to always make sure your responses match your requests, and, just a friendly reminder to all you C people -  
-Always initialize your variables :D
+Always initialize your variables 😁
