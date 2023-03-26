@@ -129,7 +129,7 @@ A couple of things come to mind:
 * The cache use is straightforward, but coupled together with `query.questions[:3]` gives us a hint
   * The server supports multiple queries in one request, so we could try to use that to poison the cache
 * Another hint is that the server doesn't check that the answer to the query sent contains the same DNS label as the query
-  * It only checks that that answer is an A record - `if rr.rtype==QTYPE.A`
+  * It only checks that the answer is an A record - `if rr.rtype==QTYPE.A`
   * Meaning that if we could make Google respond with an answer to some other domain, the server would consider it to be a valid answer
 * There is a third hint - `s = requests.Session()`
   * The server uses the same HTTPS session to communicate with Google when forwarding the requests 
@@ -210,9 +210,10 @@ If we could smuggle a whole HTTP request containing a valid query to the server 
 This part is a bit tricky so try to stay focused!  
 
 The request needs to be valid and include the following:
-* Bogus query that contains a number of `\x80` bytes and the extra HTTP payload
+* Bogus query that contains a number of `\x80` characters and the extra HTTP payload
+  * We chose `\x80` arbitrarily as it's not a valid ASCII character, any non-ASCII character will work
   * The HTTP payload has to be inside the DNS label since it's the only data that gets passed to Google
-  * There has to be an exact number of  `\x80` bytes so that the encoded payload will expand to fit the content length
+  * There has to be an exact number of  `\x80` characters so that the encoded payload will expand to fit the content length
 * A query to a domain we control
 
 Let's start with the 2nd query since it's the easiest. We'll take `my.server.com` as an example to a domain we control.  
@@ -253,7 +254,7 @@ and the new query is prepared:
 The length of this whole thing is 12+1+90+1+79+1+169+5 = 358 characters.  
 When encoded, the `\x80`s are expanded, so we get an extra of 90+79=169 bytes.  
 That means that the last 169 bytes are being sent as an extra query to the server.  
-Ah, but we have a problem... We actually haven't encountered for 2 things:  
+Ah, but we have a problem... We actually haven't considered 2 things:  
 1. The footer. Since the server code is adding a footer of 5 bytes we need to include it in our calculation
    * Well, we can actually make a small trick - remove the footer from our payload and use the one provided by the code
 2. The length of the payload is 169 and the character chr(169) exists in the data, so, when encoded, it will be expanded to `\xc2\xa9`
@@ -261,7 +262,7 @@ Ah, but we have a problem... We actually haven't encountered for 2 things:
 
 Let's review - first we removed 5 bytes from the payload, so the payload is now 164 bytes. We need to remove 5 padding bytes.  
 But, we also need to add 5 padding bytes to include the footer as the end of our own request. These 2 cancel each other.    
-Finally, we need to remove one byte to encounter for the expansion of the payload length byte.  
+Finally, we need to remove one byte to account for the expansion of the payload length byte.  
 That means we just remove one pair of `b'\xc2\x80'` bytes from the padding. That makes the 2nd chunk 158-2 = 156 bytes.    
 The new payload (with the footer removed will be):
 ```
@@ -331,7 +332,7 @@ The full payload:
 
 ## Conclusion
 
-For an unknown reason, it doesn't always work... We experimented with raw SSL sockets and made sure everything works with Google, but, sometimes, the server just won't receive the 2nd answer. We think it has something to do with the way requests handles sessions, we didn't get much into it because we ran it a few times and it worked.  
+For an unknown reason, it doesn't always work... We experimented with raw SSL sockets and made sure everything works with Google, but, sometimes, the server just won't receive the 2nd answer. We think it has something to do with the way requests handles sessions, we didn't get much into it because we ran it a few times, and it worked.  
 All in all, this challenge was super fun and really highlights the importance of working correctly with binary buffers and data validation.  
 So, remember to always make sure your responses match your requests, and, just a friendly reminder to all you C people -  
 Always initialize your variables 😁
