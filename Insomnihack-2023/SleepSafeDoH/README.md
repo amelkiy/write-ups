@@ -15,7 +15,9 @@ The challenge revolves around **DNS over HTTPS - DoH**. We get a website where w
 The backend implements DoH so the DNS queries we send go through the DoH mechanism, as well as the query for the flag domain when we ask to send the flag.  
 The backend uses `https://dns.google/dns-query` for the actual resolving and implements a cache (important!) for storing the responses.  
 
-We get the python code of the backend running in the challenge - [challenge.py](https://github.com/amelkiy/write-ups/blob/master/Insomnihack-2023/SleepSafeDoH/challenge.py)
+We get the python code of the backend running in the challenge - [challenge.py](https://github.com/amelkiy/write-ups/blob/master/Insomnihack-2023/SleepSafeDoH/challenge.py)  
+
+The [index.html](https://github.com/amelkiy/write-ups/blob/master/Insomnihack-2023/SleepSafeDoH/templates/index.html) supplied here is only for debugging, we didn't save the original page, but it was much prettier!
 
 ## DNS over HTTPS
 
@@ -330,9 +332,14 @@ The full payload:
 00000220: 69 68 61 63 6B 04 66 6C  61 67 00 00 01 00 01     ihack.flag.....
 ```
 
+## Flag
+
+Once the cache is poisoned we can invoke a POST request to `/send-flag`. The server will resolve the flag domain using its own resolver and should get the cached IP from our poisoned request.  
+Then the server submits the flag as an HTTP request to the IP we control - we just opened a `nc -l -p 80` and got the flag.
+
 ## Conclusion
 
-For an unknown reason, it doesn't always work... We experimented with raw SSL sockets and made sure everything works with Google, but, sometimes, the server just won't receive the 2nd answer. We think it has something to do with the way requests handles sessions, we didn't get much into it because we ran it a few times, and it worked.  
+For an unknown reason, the poison doesn't always work... We experimented with raw SSL sockets and made sure everything works with Google, but, sometimes, the server just won't receive the 2nd answer. We think it has something to do with the way requests handles sessions, we didn't get much into it because we ran it a few times, and it worked.  
 All in all, this challenge was super fun and really highlights the importance of working correctly with binary buffers and data validation.  
 So, remember to always make sure your responses match your requests, and, just a friendly reminder to all you C people -  
 Always initialize your variables 😁
