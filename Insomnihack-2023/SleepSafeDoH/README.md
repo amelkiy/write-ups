@@ -212,7 +212,7 @@ This part is a bit tricky so try to stay focused!
 The request needs to be valid and include the following:
 * Bogus query that contains a number of `\x80` bytes and the extra HTTP payload
   * The HTTP payload has to be inside the DNS label since it's the only data that gets passed to Google
-  * There has to be an exact number of  `\x80` bytes so that the `encode()`-d payload will expand to fit the content length
+  * There has to be an exact number of  `\x80` bytes so that the encoded payload will expand to fit the content length
 * A query to a domain we control
 
 Let's start with the 2nd query since it's the easiest. We'll take `my.server.com` as an example to a domain we control.  
